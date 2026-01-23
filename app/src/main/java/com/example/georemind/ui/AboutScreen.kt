@@ -1,23 +1,36 @@
 package com.example.georemind.ui
 
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import com.example.georemind.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreen(onNavigateBack: () -> Unit) {
+    val context = LocalContext.current
+
     Scaffold(
             topBar = {
                 TopAppBar(
                         title = { Text("About") },
                         navigationIcon = {
                             IconButton(onClick = onNavigateBack) {
-                                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                                Icon(
+                                        Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "Back"
+                                )
                             }
                         }
                 )
@@ -48,6 +61,56 @@ fun AboutScreen(onNavigateBack: () -> Unit) {
             Text("- Custom radius")
             Text("- Push notifications")
             Text("- Google Maps integration")
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Developer Section
+            Divider()
+
+            Text(text = "Developer:", style = MaterialTheme.typography.titleSmall)
+            Text(
+                    text = "Piyush Duggal + AI",
+                    style =
+                            MaterialTheme.typography.bodyMedium.copy(
+                                    textDecoration = TextDecoration.Underline,
+                                    color = MaterialTheme.colorScheme.primary
+                            ),
+                    modifier =
+                            Modifier.clickable {
+                                val intent =
+                                        Intent(
+                                                Intent.ACTION_VIEW,
+                                                Uri.parse("https://piyushduggal.me/")
+                                        )
+                                context.startActivity(intent)
+                            }
+            )
+
+            // GitHub Icon Link at Bottom Center
+            Box(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                    contentAlignment = Alignment.Center
+            ) {
+                IconButton(
+                        onClick = {
+                            val intent =
+                                    Intent(
+                                            Intent.ACTION_VIEW,
+                                            Uri.parse(
+                                                    "https://github.com/PiyushDuggal-source/geoRemind"
+                                            )
+                                    )
+                            context.startActivity(intent)
+                        }
+                ) {
+                    Icon(
+                            painter = painterResource(id = R.drawable.ic_github),
+                            contentDescription = "GitHub",
+                            modifier = Modifier.size(32.dp),
+                            tint = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
         }
     }
 }

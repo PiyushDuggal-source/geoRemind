@@ -5,8 +5,8 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.*
 import androidx.compose.material3.Divider
@@ -258,7 +258,7 @@ fun MapScreen(
                             navigationIcon = {
                                 IconButton(onClick = { scope.launch { drawerState.open() } }) {
                                     Icon(
-                                            imageVector = Icons.Default.List,
+                                            imageVector = Icons.AutoMirrored.Filled.List,
                                             contentDescription = stringResource(R.string.my_tasks)
                                     )
                                 }
