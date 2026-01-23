@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">GeoRemind</string>
+    <string name="notification_channel_name">Location Reminders</string>
+    <string name="notification_channel_description">Alerts when you enter a reminder location</string>
+    <string name="foreground_permission_rationale">This app needs your location to show reminders when you arrive at saved places.</string>
+    <string name="background_permission_rationale">To trigger reminders even when the app is closed, please select \"Allow all the time\" in location settings.</string>
+    <string name="notification_permission_rationale">Allow notifications to receive alerts when you enter a reminder location.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="add_task">Add Task</string>
+    <string name="task_title">Task Title</string>
+    <string name="task_description">Description (optional)</string>
+    <string name="radius_label">Radius: %1$d meters</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="search_places">Search places...</string>
+    <string name="my_tasks">My Tasks</string>
+    <string name="no_tasks">No tasks yet. Tap on the map to add one!</string>
+    <string name="delete_task">Delete Task</string>
+    <string name="task_saved">Task saved!</string>
+    <string name="task_deleted">Task deleted</string>
+    <string name="geofence_error">Failed to set up location reminder</string>
+    <string name="location_required">Location permission is required</string>
+</resources>
