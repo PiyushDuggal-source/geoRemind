@@ -20,11 +20,36 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: TaskRepository
     private val geofenceHelper: GeofenceHelper
+    private val userPreferences: com.example.georemind.data.UserPreferencesRepository
+
+    // Cache the latest default radius
+    private var cachedDefaultRadius = 200f
 
     init {
         val database = AppDatabase.getDatabase(application)
         repository = TaskRepository(database.taskDao())
         geofenceHelper = GeofenceHelper(application)
+        userPreferences = com.example.georemind.data.UserPreferencesRepository(application)
+
+        // Observe default radius
+        viewModelScope.launch {
+            userPreferences.defaultRadius.collect { radius ->
+                cachedDefaultRadius = radius
+                // If no location is currently selected (or we are in "idle" mode), update the
+                // slider
+                if (_selectedLocation.value == null) {
+                    _selectedRadius.value = radius
+                }
+            }
+        }
+    }
+
+    // Expose for Settings Screen
+    val defaultRadius = userPreferences.defaultRadius
+
+    /** Save default radius to preferences */
+    fun saveDefaultRadius(radius: Float) {
+        viewModelScope.launch { userPreferences.saveDefaultRadius(radius) }
     }
 
     // All tasks as a StateFlow for Compose
@@ -96,7 +121,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     /** Clear the selected location. */
     fun clearSelection() {
         _selectedLocation.value = null
-        _selectedRadius.value = 200f
+        _selectedRadius.value = cachedDefaultRadius
     }
 
     /** Save a new task or update an existing one. */

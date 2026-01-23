@@ -37,7 +37,11 @@ import kotlinx.coroutines.tasks.await
 /** Main map screen with Google Maps, task markers, and geofence circles. */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
-fun MapScreen(viewModel: TaskViewModel = viewModel()) {
+fun MapScreen(
+        viewModel: TaskViewModel = viewModel(),
+        onNavigateToSettings: () -> Unit,
+        onNavigateToAbout: () -> Unit
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -64,65 +68,46 @@ fun MapScreen(viewModel: TaskViewModel = viewModel()) {
         position = CameraPosition.fromLatLngZoom(defaultLocation, 14f)
     }
 
-    // Animation for FAB position
-    val fabPadding by
-            androidx.compose.animation.core.animateDpAsState(
-                    targetValue = if (selectedLocation != null) 160.dp else 0.dp,
-                    label = "fabPadding"
-            )
-
-    // Move camera to user's current location on first load
-    LaunchedEffect(locationPermissionState.status.isGranted) {
-        if (locationPermissionState.status.isGranted) {
-            try {
-                val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-                @SuppressLint("MissingPermission")
-                val location = fusedLocationClient.lastLocation.await()
-                location?.let {
-                    val userLatLng = LatLng(it.latitude, it.longitude)
-                    cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(userLatLng, 15f))
-                }
-            } catch (e: Exception) {
-                // Ignore - will use default location
-            }
-        }
-    }
-
-    // Show error messages
-    LaunchedEffect(errorMessage) {
-        errorMessage?.let {
-            snackbarHostState.showSnackbar(it)
-            viewModel.clearError()
-        }
-    }
-
-    // Show success messages
-    LaunchedEffect(successMessage) {
-        successMessage?.let {
-            snackbarHostState.showSnackbar(it)
-            viewModel.clearSuccess()
-        }
-    }
-
-    // Re-register geofences after permissions are granted
-    LaunchedEffect(locationPermissionState.status.isGranted) {
-        if (locationPermissionState.status.isGranted) {
-            viewModel.reRegisterAllGeofences()
-        }
-    }
-
     ModalNavigationDrawer(
             drawerState = drawerState,
             gesturesEnabled = drawerState.isOpen,
             drawerContent = {
-                ModalDrawerSheet {
+                ModalDrawerSheet(
+                        drawerContainerColor = MaterialTheme.colorScheme.surface,
+                ) {
+                    Spacer(Modifier.height(12.dp))
+                    NavigationDrawerItem(
+                            label = { Text("Map") },
+                            selected = true,
+                            onClick = { scope.launch { drawerState.close() } },
+                            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+                    NavigationDrawerItem(
+                            label = { Text("Settings") },
+                            selected = false,
+                            onClick = {
+                                scope.launch { drawerState.close() }
+                                onNavigateToSettings()
+                            },
+                            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+                    NavigationDrawerItem(
+                            label = { Text("About") },
+                            selected = false,
+                            onClick = {
+                                scope.launch { drawerState.close() }
+                                onNavigateToAbout()
+                            },
+                            modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+
+                    Divider(modifier = Modifier.padding(vertical = 8.dp))
+
                     Text(
                             text = stringResource(R.string.my_tasks),
                             style = MaterialTheme.typography.headlineSmall,
                             modifier = Modifier.padding(16.dp)
                     )
-
-                    Divider()
 
                     TaskList(
                             tasks = tasks,
@@ -144,6 +129,57 @@ fun MapScreen(viewModel: TaskViewModel = viewModel()) {
                 }
             }
     ) {
+
+        // Animation for FAB position
+        val fabPadding by
+                androidx.compose.animation.core.animateDpAsState(
+                        targetValue = if (selectedLocation != null) 160.dp else 0.dp,
+                        label = "fabPadding"
+                )
+
+        // Move camera to user's current location on first load
+        LaunchedEffect(locationPermissionState.status.isGranted) {
+            if (locationPermissionState.status.isGranted) {
+                try {
+                    val fusedLocationClient =
+                            LocationServices.getFusedLocationProviderClient(context)
+                    @SuppressLint("MissingPermission")
+                    val location = fusedLocationClient.lastLocation.await()
+                    location?.let {
+                        val userLatLng = LatLng(it.latitude, it.longitude)
+                        cameraPositionState.animate(
+                                CameraUpdateFactory.newLatLngZoom(userLatLng, 15f)
+                        )
+                    }
+                } catch (e: Exception) {
+                    // Ignore - will use default location
+                }
+            }
+        }
+
+        // Show error messages
+        LaunchedEffect(errorMessage) {
+            errorMessage?.let {
+                snackbarHostState.showSnackbar(it)
+                viewModel.clearError()
+            }
+        }
+
+        // Show success messages
+        LaunchedEffect(successMessage) {
+            successMessage?.let {
+                snackbarHostState.showSnackbar(it)
+                viewModel.clearSuccess()
+            }
+        }
+
+        // Re-register geofences after permissions are granted
+        LaunchedEffect(locationPermissionState.status.isGranted) {
+            if (locationPermissionState.status.isGranted) {
+                viewModel.reRegisterAllGeofences()
+            }
+        }
+
         Scaffold(
                 snackbarHost = { SnackbarHost(snackbarHostState) },
                 floatingActionButton = {
