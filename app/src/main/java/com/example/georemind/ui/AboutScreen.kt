@@ -15,6 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.example.georemind.R
+import androidx.core.net.toUri
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,7 +81,7 @@ fun AboutScreen(onNavigateBack: () -> Unit) {
                                 val intent =
                                         Intent(
                                                 Intent.ACTION_VIEW,
-                                                Uri.parse("https://piyushduggal.me/")
+                                            "https://piyushduggal.me/".toUri()
                                         )
                                 context.startActivity(intent)
                             }
@@ -96,9 +97,7 @@ fun AboutScreen(onNavigateBack: () -> Unit) {
                             val intent =
                                     Intent(
                                             Intent.ACTION_VIEW,
-                                            Uri.parse(
-                                                    "https://github.com/PiyushDuggal-source/geoRemind"
-                                            )
+                                        "https://github.com/PiyushDuggal-source/geoRemind".toUri()
                                     )
                             context.startActivity(intent)
                         }
